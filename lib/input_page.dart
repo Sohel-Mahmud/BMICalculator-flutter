@@ -1,8 +1,12 @@
+import 'package:bmi_calculator/bottom_button.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'reusable_card.dart';
+import 'icon_content.dart';
+import 'constants.dart';
+import 'rounded_icon_button.dart';
 
-const bottomContainerHeight = 80.0;
-const activeCardColor = Color(0xFF1D1E33);
-const bottomContainerColor = Color(0xFFEB1555);
+enum Gender { male, female }
 
 class InputPage extends StatefulWidget {
   @override
@@ -10,6 +14,11 @@ class InputPage extends StatefulWidget {
 }
 
 class _InputPageState extends State<InputPage> {
+  Gender selectedGender;
+  int height = 170;
+  int weight = 55;
+  int age = 18;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,16 +26,39 @@ class _InputPageState extends State<InputPage> {
         title: Text('BMI CALCULATOR'),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Expanded(
             child: Row(
               children: <Widget>[
                 Expanded(
-                  child: ResuableCard(color: Color(0xFF1D1E33)),
+                  child: ResuableCard(
+                    onPressed: () {
+                      setState(() {
+                        selectedGender = Gender.male;
+                      });
+                    },
+                    color: selectedGender == Gender.male
+                        ? kActiveCardColor
+                        : kInactiveCardColor,
+                    cardChild: IconContents(
+                        icon: FontAwesomeIcons.mars, label: 'MALE'),
+                  ),
                 ),
                 Expanded(
                   child: ResuableCard(
-                    color: activeCardColor,
+                    onPressed: () {
+                      setState(() {
+                        selectedGender = Gender.female;
+                      });
+                    },
+                    color: selectedGender == Gender.female
+                        ? kActiveCardColor
+                        : kInactiveCardColor,
+                    cardChild: IconContents(
+                      icon: FontAwesomeIcons.venus,
+                      label: 'FEMALE',
+                    ),
                   ),
                 ),
               ],
@@ -34,7 +66,53 @@ class _InputPageState extends State<InputPage> {
           ),
           Expanded(
             child: ResuableCard(
-              color: activeCardColor,
+              cardChild: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'HEIGHT',
+                    style: kLabelTextStyle,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: <Widget>[
+                      Text(
+                        height.toString(),
+                        style: kNumberTextStyle,
+                      ),
+                      Text(
+                        'cm',
+                        style: kLabelTextStyle,
+                      ),
+                    ],
+                  ),
+                  SliderTheme(
+                    data: SliderTheme.of(context).copyWith(
+                      activeTrackColor: Colors.white,
+                      inactiveTickMarkColor: Color(0xFF8De98),
+                      thumbColor: Colors.pink,
+                      overlayColor: Color(0x29EB1555),
+                      thumbShape:
+                          RoundSliderThumbShape(enabledThumbRadius: 15.0),
+                      overlayShape:
+                          RoundSliderOverlayShape(overlayRadius: 30.0),
+                    ),
+                    child: Slider(
+                      value: height.toDouble(),
+                      min: 120.0,
+                      max: 220.0,
+                      onChanged: (double newValue) {
+                        setState(() {
+                          height = newValue.round();
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              color: kActiveCardColor,
             ),
           ),
           Expanded(
@@ -42,58 +120,108 @@ class _InputPageState extends State<InputPage> {
               children: <Widget>[
                 Expanded(
                   child: ResuableCard(
-                    color: activeCardColor,
+                    color: kActiveCardColor,
+                    cardChild: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          'WIEGHT',
+                          style: kLabelTextStyle,
+                        ),
+                        Text(
+                          weight.toString(),
+                          style: kNumberTextStyle,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            RoundedMatButton(
+                              onPressed: () {
+                                setState(() {
+                                  if (weight > 30) {
+                                    weight--;
+                                  }
+                                });
+                              },
+                              icon: FontAwesomeIcons.minus,
+                            ),
+                            SizedBox(
+                              width: 10.0,
+                            ),
+                            RoundedMatButton(
+                              onPressed: () {
+                                setState(() {
+                                  if (weight < 150) {
+                                    weight++;
+                                  }
+                                });
+                              },
+                              icon: FontAwesomeIcons.plus,
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
                   ),
                 ),
                 Expanded(
                   child: ResuableCard(
-                    color: activeCardColor
+                    color: kActiveCardColor,
+                    cardChild: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          'AGE',
+                          style: kLabelTextStyle,
+                        ),
+                        Text(
+                          age.toString(),
+                          style: kNumberTextStyle,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            RoundedMatButton(
+                              onPressed: () {
+                                setState(() {
+                                  if (age > 10) {
+                                    age--;
+                                  }
+                                });
+                              },
+                              icon: FontAwesomeIcons.minus,
+                            ),
+                            SizedBox(
+                              width: 10.0,
+                            ),
+                            RoundedMatButton(
+                              onPressed: () {
+                                setState(() {
+                                  if (age < 80) {
+                                    age++;
+                                  }
+                                });
+                              },
+                              icon: FontAwesomeIcons.plus,
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-          Container(
-            color: bottomContainerColor,
-            margin: EdgeInsets.only(top: 10.0),
-            width: double.infinity,
-            height: bottomContainerHeight,
-          ),
+          BottomButton(
+            onTap: () {
+              Navigator.pushNamed(context, '/result');
+            },
+            buttonTitle: 'CALCULATE',
+          )
         ],
       ),
     );
   }
 }
 
-class ResuableCard extends StatelessWidget {
-  final Color color;
-
-  ResuableCard({@required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        //use color on boxdecoration if its used
-        //using color on container will lead to an error
-        color: color,
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      margin: EdgeInsets.all(15.0),
-    );
-  }
-}
-
-/*
-//we can change theme of any widget by wrapping them with theme widget
-
-floatingActionButton: Theme(
-        data: ThemeData(
-          accentColor: Colors.purple,
-        ),
-        child: FloatingActionButton(
-          onPressed: () {},
-          child: Icon(Icons.add),
-        ),
-      ),
-*/
